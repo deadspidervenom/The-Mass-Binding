@@ -2,9 +2,7 @@
 
 A [White Knuckle](https://store.steampowered.com/app/2881650/White_Knuckle/) mod that adds **The Mass**, a new Binding: hunger only refills from eating denizens — or from "Denizen Meat" cooked from them — instead of normal food. Eating enough denizens mutates you but your hunger grows each time.
 
-[Watch the video on YouTube]([https://www.youtube.com/watch?v=VIDEO_ID](https://youtu.be/kkRDp-EnqT8))
-
-![Screenshot](Screenshot.jpg)
+[![Screenshot](https://youtu.be/kkRDp-EnqT8)](Screenshot.jpg)
 
 ## Features
 
