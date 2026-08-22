@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>TheMassBinding</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <!-- White Knuckle is a Mono/BepInEx 5 game, not IL2CPP -->
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+
+  <!--
+    Fill in these two paths for your machine, or pass them on the command line:
+      dotnet build -p:BepInExDir="C:\...\BepInEx\core" -p:GameManagedDir="C:\...\White Knuckle_Data\Managed"
+  -->
+  <PropertyGroup>
+    <BepInExDir Condition="'$(BepInExDir)'==''">C:\Users\Vilcan\AppData\Roaming\r2modmanPlus-local\WhiteKnuckle\profiles\Default\BepInEx\core</BepInExDir>
+    <GameManagedDir Condition="'$(GameManagedDir)'==''">E:\SteamLibrary\steamapps\common\White Knuckle\White Knuckle_Data\Managed</GameManagedDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExDir)\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(BepInExDir)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GameManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(GameManagedDir)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GameManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- ENT_Player and other game types inherit from MonoBehaviourGizmos, which lives
+         in this third-party pathfinding/gizmos library the game itself depends on. -->
+    <Reference Include="ALINE">
+      <HintPath>$(GameManagedDir)\ALINE.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
