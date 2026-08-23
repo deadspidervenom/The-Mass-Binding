@@ -19,6 +19,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- SDK-style projects compile every .cs file found recursively under the
+         project folder by default (only bin/obj are excluded automatically).
+         Without this, a backup copy of the source anywhere inside this folder
+         gets built alongside the real file and every type collides. -->
+    <Compile Remove="backup\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>$(BepInExDir)\BepInEx.dll</HintPath>
       <Private>false</Private>

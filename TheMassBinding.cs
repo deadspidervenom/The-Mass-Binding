@@ -12,7 +12,7 @@ namespace TheMassMod
     {
         public const string PluginGuid = "com.vilcan.themassbinding";
         public const string PluginName = "The Mass Binding";
-        public const string PluginVersion = "1.0";
+        public const string PluginVersion = "1.0.1";
 
         public static ConfigEntry<float> HungerDecayMultiplier;
         public static ConfigEntry<float> NerfedFoodFraction;
@@ -274,6 +274,26 @@ namespace TheMassMod
             }
         }
 
+        public static void DisableLeaderboardsForThisRun()
+        {
+            try
+            {
+                var gameManagerType = AccessTools.TypeByName("CL_GameManager");
+                object gMan = AccessTools.Field(gameManagerType, "gMan")?.GetValue(null);
+                if (gMan == null)
+                {
+                    TheMassPlugin.Logger.LogWarning("[TheMassBinding] CL_GameManager.gMan was null — couldn't disable leaderboards for this run.");
+                    return;
+                }
+
+                AccessTools.Field(gameManagerType, "allowScores")?.SetValue(gMan, false);
+            }
+            catch (System.Exception e)
+            {
+                TheMassPlugin.Logger.LogError($"[TheMassBinding] DisableLeaderboardsForThisRun failed: {e}");
+            }
+        }
+
         private static void ApplyMeatCosmetics(Item clone)
         {
             GameObject cosmeticTemplate = FindItemPrefabTemplate(CosmeticItemPrefabName);
@@ -482,6 +502,8 @@ namespace TheMassMod
 
             if (isNew)
             {
+                TheMassBinding.DisableLeaderboardsForThisRun();
+
                 _currentIncrement = TheMassPlugin.StartingThreshold.Value;
                 _nextThreshold = _currentIncrement;
 
