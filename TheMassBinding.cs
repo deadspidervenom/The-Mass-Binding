@@ -12,7 +12,7 @@ namespace TheMassMod
     {
         public const string PluginGuid = "com.vilcan.themassbinding";
         public const string PluginName = "The Mass Binding";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.0";
 
         public static ConfigEntry<float> HungerDecayMultiplier;
         public static ConfigEntry<float> NerfedFoodFraction;
@@ -274,26 +274,6 @@ namespace TheMassMod
             }
         }
 
-        public static void DisableLeaderboardsForThisRun()
-        {
-            try
-            {
-                var gameManagerType = AccessTools.TypeByName("CL_GameManager");
-                object gMan = AccessTools.Field(gameManagerType, "gMan")?.GetValue(null);
-                if (gMan == null)
-                {
-                    TheMassPlugin.Logger.LogWarning("[TheMassBinding] CL_GameManager.gMan was null — couldn't disable leaderboards for this run.");
-                    return;
-                }
-
-                AccessTools.Field(gameManagerType, "allowScores")?.SetValue(gMan, false);
-            }
-            catch (System.Exception e)
-            {
-                TheMassPlugin.Logger.LogError($"[TheMassBinding] DisableLeaderboardsForThisRun failed: {e}");
-            }
-        }
-
         private static void ApplyMeatCosmetics(Item clone)
         {
             GameObject cosmeticTemplate = FindItemPrefabTemplate(CosmeticItemPrefabName);
@@ -502,8 +482,6 @@ namespace TheMassMod
 
             if (isNew)
             {
-                TheMassBinding.DisableLeaderboardsForThisRun();
-
                 _currentIncrement = TheMassPlugin.StartingThreshold.Value;
                 _nextThreshold = _currentIncrement;
 
@@ -697,38 +675,29 @@ namespace TheMassMod
             }
         }
 
+        private static readonly HashSet<Perk.PerkType> AllowedRewardTypes = new HashSet<Perk.PerkType>
+        {
+            Perk.PerkType.standard,
+            Perk.PerkType.orange,
+            Perk.PerkType.delta,
+            Perk.PerkType.rho,
+            Perk.PerkType.trinket,
+        };
+
         private void GrantRandomPerk()
         {
             List<Perk> pool = Resources.FindObjectsOfTypeAll<Perk>()
                 .Where(p => p != null
                     && p.id != TheMassBinding.BindingId
-                    && p.perkType != Perk.PerkType.binding
+                    && AllowedRewardTypes.Contains(p.perkType)
                     && p.spawnPool != Perk.PerkPool.never
-                    && !IsNegativePerk(p)
-                    && !HasHungerModule(p))
+                    && !HasModule<PerkModule_HungerMeter>(p))
                 .ToList();
 
             if (pool.Count == 0) return;
             _player.AddPerk(pool[UnityEngine.Random.Range(0, pool.Count)], 1, true);
         }
 
-        private static bool HasHungerModule(Perk p) => p.modules != null && p.modules.OfType<PerkModule_HungerMeter>().Any();
-
-        private static readonly string[] NegativeTitleKeywords =
-        {
-            "shattered", "fractured", "broken", "injury", "injured", "wound",
-        };
-
-        private static bool IsNegativePerk(Perk p)
-        {
-            if (!string.IsNullOrEmpty(p.id) && p.id.StartsWith("Injury", System.StringComparison.OrdinalIgnoreCase))
-                return true;
-            if (!string.IsNullOrEmpty(p.title))
-            {
-                string title = p.title.ToLowerInvariant();
-                if (NegativeTitleKeywords.Any(k => title.Contains(k))) return true;
-            }
-            return false;
-        }
+        private static bool HasModule<T>(Perk p) where T : PerkModule => p.modules != null && p.modules.OfType<T>().Any();
     }
 }
