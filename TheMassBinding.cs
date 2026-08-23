@@ -12,7 +12,7 @@ namespace TheMassMod
     {
         public const string PluginGuid = "com.vilcan.themassbinding";
         public const string PluginName = "The Mass Binding";
-        public const string PluginVersion = "1.2";
+        public const string PluginVersion = "1.3";
 
         public static ConfigEntry<float> HungerDecayMultiplier;
         public static ConfigEntry<float> NerfedFoodFraction;
@@ -26,6 +26,7 @@ namespace TheMassMod
         public static ConfigEntry<KeyCode> FoodMakerKey;
         public static ConfigEntry<float> EatRange;
         public static ConfigEntry<bool> VerboseLogging;
+        public static ConfigEntry<string> BlacklistedDenizenTypes;
 
         internal static new BepInEx.Logging.ManualLogSource Logger;
 
@@ -63,6 +64,14 @@ namespace TheMassMod
                 "Max distance to a denizen for the eat prompt to register.");
             VerboseLogging = Config.Bind("Debug", "VerboseLogging", false,
                 "Per-frame eat-detection logging. Only useful for troubleshooting.");
+            BlacklistedDenizenTypes = Config.Bind("Eating", "BlacklistedDenizenTypes",
+                "DEN_Mother,DEN_Hunter,DEN_Hunter_Arm,DEN_Teeth,DEN_Face,DEN_Turret," +
+                "DEN_Apparition,DEN_DeathFloor,DEN_LadderNightmare,DEN_EngravedDoor,DEN_Roach",
+                "Comma-separated component type names that can never be eaten, checked by exact " +
+                "class name anywhere in the found denizen's full hierarchy (not just the exact " +
+                "hit object) — several of these (e.g. DEN_Hunter_Arm) aren't Denizen subclasses " +
+                "themselves and live on a different part of a composite creature's hierarchy. " +
+                "Edit this list freely; no rebuild needed.");
 
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
@@ -668,7 +677,59 @@ namespace TheMassMod
             return found;
         }
 
-        private static bool IsBlacklisted(Denizen denizen) => denizen.GetComponent<DEN_Roach>() != null;
+        // Searches the FULL hierarchy from the found denizen's topmost root, not just
+        // the exact component found — several blacklisted types (e.g. DEN_Hunter_Arm)
+        // aren't Denizen subclasses themselves and live on a different part of a
+        // composite creature's hierarchy than whatever our raycast actually finds
+        // (same pattern confirmed live for DEN_Barnacle_Zombie/DEN_Barnacle).
+        private static bool IsBlacklisted(Denizen denizen)
+        {
+            HashSet<string> blacklist = GetBlacklistSet();
+            if (blacklist.Count == 0) return false;
+
+            // NOTE: transform.root walks all the way up to the scene's top-level
+            // object — every denizen in the whole loaded level ends up nested under
+            // one shared root, so searching from there matched everything blacklisted
+            // anywhere in the level. Even searching the immediate parent's FULL
+            // subtree is risky if denizens are flatly parented under one shared
+            // container (e.g. ".../Entities/Denizens/<creature>") — that would still
+            // pick up unrelated sibling denizens. Narrowed to: the denizen's own
+            // subtree (self + its own children only), plus components directly ON its
+            // immediate parent (not the parent's OTHER children) — the latter still
+            // correctly covers the confirmed Barnacle Zombie pattern, since
+            // DEN_Barnacle_Zombie sits directly on the shared immediate parent of both
+            // the zombie body and the barnacle attack, without scanning siblings.
+            foreach (Component c in denizen.GetComponentsInChildren<Component>(true))
+            {
+                if (c != null && blacklist.Contains(c.GetType().Name)) return true;
+            }
+
+            if (denizen.transform.parent != null)
+            {
+                foreach (Component c in denizen.transform.parent.GetComponents<Component>())
+                {
+                    if (c != null && blacklist.Contains(c.GetType().Name)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static HashSet<string> _blacklistCache;
+        private static string _blacklistCacheSource;
+
+        private static HashSet<string> GetBlacklistSet()
+        {
+            string current = TheMassPlugin.BlacklistedDenizenTypes.Value ?? "";
+            if (_blacklistCache == null || _blacklistCacheSource != current)
+            {
+                _blacklistCacheSource = current;
+                _blacklistCache = new HashSet<string>(
+                    current.Split(',').Select(s => s.Trim()).Where(s => s.Length > 0),
+                    System.StringComparer.OrdinalIgnoreCase);
+            }
+            return _blacklistCache;
+        }
 
         private static bool IsGrub(Denizen denizen) => denizen != null && denizen.GetComponent<DEN_SlugGrub>() != null;
 
@@ -705,6 +766,27 @@ namespace TheMassMod
             denizen.Kill("Eaten", info);
 
             UnityEngine.Object.Destroy(denizen.gameObject, 0.15f);
+
+            // DEN_Barnacle_Zombie sits as a component on the SAME root GameObject as
+            // both the zombie body and its barnacle attack (confirmed live via Unity
+            // Explorer) — the barnacle's own DEN_Barnacle component lives deeper in a
+            // child subtree, so it's what our normal raycast finds and eats first,
+            // leaving the zombie body behind with no attack. Walking up from the eaten
+            // barnacle with GetComponentInParent reliably finds that shared root.
+            // Pure cleanup: kills the now-attackless body too, but grants no extra
+            // hunger/credit — only the barnacle itself was actually "eaten".
+            if (denizen.GetComponent<DEN_Barnacle>() != null)
+            {
+                DEN_Barnacle_Zombie ownerZombie = denizen.GetComponentInParent<DEN_Barnacle_Zombie>();
+                if (ownerZombie != null && !ownerZombie.dead)
+                {
+                    var zombieInfo = Damageable.DamageInfo.CreateDamageInfo(9999f, _player, "Eaten");
+                    ownerZombie.Kill("Eaten", zombieInfo);
+                    UnityEngine.Object.Destroy(ownerZombie.gameObject, 0.15f);
+                    TheMassPlugin.Logger.LogInfo("[TheMassMod] Eaten barnacle's zombie host cleaned up too.");
+                }
+            }
+
             return true;
         }
 
