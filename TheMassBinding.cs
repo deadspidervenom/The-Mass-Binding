@@ -12,7 +12,7 @@ namespace TheMassMod
     {
         public const string PluginGuid = "com.vilcan.themassbinding";
         public const string PluginName = "The Mass Binding";
-        public const string PluginVersion = "1.1";
+        public const string PluginVersion = "1.2";
 
         public static ConfigEntry<float> HungerDecayMultiplier;
         public static ConfigEntry<float> NerfedFoodFraction;
@@ -246,6 +246,49 @@ namespace TheMassMod
             inventory.AddItemToInventoryScreen(position, clone, true, false, false);
         }
 
+        private static GameObject _noteTemplateCache;
+
+        public static void SpawnNote(Vector3 position, ENT_Player player, string noteText)
+        {
+            if (_noteTemplateCache == null)
+            {
+                WKAssetDatabase db = CL_AssetManager.GetFullCombinedAssetDatabase();
+                _noteTemplateCache = db?.itemPrefabs?.FirstOrDefault(p => p != null
+                    && p.GetComponent<Item_Object>()?.itemData?.handItemAsset is HandItem_Note);
+
+                if (_noteTemplateCache == null)
+                {
+                    TheMassPlugin.Logger.LogWarning("[TheMassBinding] No note-type item found in the item prefab database — can't create the intro note.");
+                    return;
+                }
+            }
+
+            Item_Object templateItemObject = _noteTemplateCache.GetComponent<Item_Object>();
+            Item clone = templateItemObject?.itemData?.GetClone(null, false);
+            if (clone == null) return;
+
+            // HandItem_Note.Initialize() derives its displayed text from
+            // item.GetFirstDataStringByType("text") every time the note is
+            // equipped/held — it overwrites the TMP_Text component itself, so
+            // setting that component's text directly gets stomped. The actual
+            // per-item content lives here, as a "text:<content>" entry in the
+            // Item's own data list. Assigning a new list (rather than editing
+            // the cloned one in place) keeps this from touching the shared
+            // template if GetClone happened to shallow-copy the reference.
+            clone.data = new List<string> { $"text:{noteText}" };
+
+            if (player == null) return;
+
+            var inventory = AccessTools.Field(typeof(ENT_Player), "inventory").GetValue(player) as Inventory;
+            if (inventory == null)
+            {
+                TheMassPlugin.Logger.LogError("[TheMassBinding] Couldn't reach the player's inventory.");
+                return;
+            }
+
+            inventory.AddItemToInventoryScreen(position, clone, true, false, false);
+        }
+
         private const string GrubSacrificeStat = "grubs-used";
         private const string GrubSacrificeFlag = "session_sacrificed_grub";
 
@@ -271,6 +314,26 @@ namespace TheMassMod
             catch (System.Exception e)
             {
                 TheMassPlugin.Logger.LogError($"[TheMassBinding] ApplyGrubSacrificeEquivalent failed: {e}");
+            }
+        }
+
+        public static void DisableLeaderboardsForThisRun()
+        {
+            try
+            {
+                var gameManagerType = AccessTools.TypeByName("CL_GameManager");
+                object gMan = AccessTools.Field(gameManagerType, "gMan")?.GetValue(null);
+                if (gMan == null)
+                {
+                    TheMassPlugin.Logger.LogWarning("[TheMassBinding] CL_GameManager.gMan was null — couldn't disable leaderboards for this run.");
+                    return;
+                }
+
+                AccessTools.Field(gameManagerType, "allowScores")?.SetValue(gMan, false);
+            }
+            catch (System.Exception e)
+            {
+                TheMassPlugin.Logger.LogError($"[TheMassBinding] DisableLeaderboardsForThisRun failed: {e}");
             }
         }
 
@@ -482,6 +545,8 @@ namespace TheMassMod
 
             if (isNew)
             {
+                TheMassBinding.DisableLeaderboardsForThisRun();
+
                 _currentIncrement = TheMassPlugin.StartingThreshold.Value;
                 _nextThreshold = _currentIncrement;
 
@@ -489,6 +554,9 @@ namespace TheMassMod
                 {
                     for (int i = 0; i < TheMassPlugin.StartingMeatCount.Value; i++)
                         TheMassBinding.SpawnDenizenMeat(_player.transform.position, _player);
+
+                    string noteText = $"While holding both grab keys\nand looking at a denizen\nPress {TheMassPlugin.EatKey.Value} to eat\nPress {TheMassPlugin.FoodMakerKey.Value} to make meat";
+                    TheMassBinding.SpawnNote(_player.transform.position, _player, noteText);
                 }
             }
 
