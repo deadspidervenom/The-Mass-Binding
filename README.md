@@ -1,4 +1,4 @@
-#AI-Generated Tag recent addition Note
+# AI-Generated Tag recent addition Note
 
 This will be a long section so i will include a TL;DR but i ask you, if you like this mod or dont want to crusify me unjustly please read all of it.
 
