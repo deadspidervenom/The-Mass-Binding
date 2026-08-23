@@ -12,7 +12,7 @@ namespace TheMassMod
     {
         public const string PluginGuid = "com.vilcan.themassbinding";
         public const string PluginName = "The Mass Binding";
-        public const string PluginVersion = "1.0";
+        public const string PluginVersion = "1.1";
 
         public static ConfigEntry<float> HungerDecayMultiplier;
         public static ConfigEntry<float> NerfedFoodFraction;
