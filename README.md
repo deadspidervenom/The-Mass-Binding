@@ -1,29 +1,4 @@
-# AI-Generated Tag recent addition Note
-
-This will be a long section so i will include a TL;DR but i ask you, if you like this mod or dont want to crusify me unjustly please read all of it.
-
-Before i go on, in this project i did not use Gen AI art, audio, or video in anything. I oppose the usage of such things. Now on to the TL;DR
-
-TL;DR: 2 people have brought up to me concerns with the fact this document was generated with claude.ai and that i use LLM Assistance in my coding to overcome a mental disability that would ruin the health of both my mind and body. The one bringing up concerns about LLM code insisted i add in the "AI-Generated" tag even though claude.ai only assists me on the parts my disability would act up on as well as this bit in the doc. So that is why i am making this and adding the tag so people will leave me alone. For a more detailed reason for everything which i ask you to genuinely read, please check below.
-
-So what disability do i have that warrants the use of claude.ai? Well the root name is "Autism" but its something that is a part of that, that is the issue. In my special blend of the spectrum i got a form of "Obsessive-Compulsive Disorder". So what does that look like and how does it relate to coding? Glad you asked, first lets go over what it looks like. When i get into an obsessive state i effectively change as a person. Nothing but my obsession matters, not me eating, drinking, using the bathroom, taking care of myself/my eviroment, and sleeping. Friends and family stop mattering, only my obsession matters. In coding this happens if i hit any sort of issue that i can't figure out the immediate solution. When it happens i tunnel vision on the method i am trying. This leads me to spend days sometimes weeks on one problem, refusing to compromise until i either finally accept the method is impossible or make the method possible. However afterwards i become extremely burnt out and abandon the project. Plus i get a whole host of other issues once i am out of an obsessive state, i feel the effects of all the 24 hours awake, multiple days not eating, the guilt of ignoring family and friends, and other such things.
-
-Due to that when i tried using claude.ai to help me overcome the issues i have as a last ditch effort to do the thing i enjoy. I found that while i still get obsessive its far weaker then when i deal with those parts myself, this allowed me to enjoy coding without worrying that ill end up in the hospital. Which has made me the happiest i've been in almost 18 years and allowed me to not fear at all the suicidal thoughts i've struggled with for years.
-
-I did not mark it at the start for multiple reasons.
-
-- I did not want to have to explain my personal disability problems which is needed since the tag is misleading in my case.
-- I did not want my genuine hardwork and effort for quality to be overshadowed by a label that only remotely applies.
-- I did not think it was needed for LLM Assisted work and the fact i do not use Gen AI art, audio, or video.
-
-Now that it has come to this i have a potentially sad announcement.
-
-Going forward as of this update, i likely will stop working on White Knuckle mods. Between the constant people bothering me over my LLM usage now and likely in the future even though its to overcome my disability, and the fact that in the White Knuckle modding discord they were actively discussing ways to blacklist mods that have any sort of Gen AI touching them regardless of quality or reasoning. With a few even discussing seeing if the devs might add the blacklist baked into the game.
-
-Since i do not like being hounded over my disability, dont want to be around when my work goes to waste as spiteful people who see "AI" and want it to burn regardless of any good it does, who also preceeds to mark all my works as "AI" and makes it so i get blamed for things i did not do because few people will actually read this, and will slander me over something i did to overcome my disability and be happy with my life.
-
-If you want to reach me make and issue on github, or DM me on discord. Ill try to keep things updated and fix any major issues, but unless something changes my mind. I see it as too much emotional distress to keep working on white knuckle mods.
-
+Removed the AI thing here, you can read it on the thunderstore. Each time i read it, it made me want to delete this project.
 
 # The Mass Binding
 
