@@ -3,7 +3,7 @@ Removed the AI thing here, you can read it on the thunderstore. I found out yest
 # The Mass Binding
 
 A [White Knuckle](https://store.steampowered.com/app/2881650/White_Knuckle/) mod that adds **The Mass**, a new Binding: hunger only refills from eating denizens — or from "Denizen Meat" collected from them — instead of normal food. Eating enough denizens mutates you but your hunger grows each time.
-[Thunderstore](https://thunderstore.io/c/white-knuckle/p/JEG_Development/The_Mass_Binding/)
+[Thunderstore](https://thunderstore.io/c/white-knuckle/p/JEG_Development/The_Mass_Binding/) [Discord](https://discord.gg/dAUp9E6CdD)
 [![Screenshot](Screenshot.jpg)](https://youtu.be/kkRDp-EnqT8)
 
 ## Features
