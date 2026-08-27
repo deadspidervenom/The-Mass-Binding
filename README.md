@@ -1,4 +1,4 @@
-Removed the AI thing here, you can read it on the thunderstore. I found out yesterday my project does not require the tag. Since to require the tag you need HEAVY ai usage. MFW someone lied to me out of blind hate for AI.
+Removed the AI thing here, you can read it on the thunderstore.
 
 # The Mass Binding
 
