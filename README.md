@@ -1,4 +1,4 @@
-Removed the AI thing here, you can read it on the thunderstore.
+This mod and other mods for white knuckle from me are abandoned. Both the modders in the modding community and the devs have made it clear that AI-Assisted work is considered "AI-Generated". That my use case of it is "wrong" and that i am not allowed to overcome my disability to do what i enjoy. Too the point it disgusts me. I have deprecated my thunderstore page and for the co-op mod i was working on, it will be archived and abandoned. If the day comes that white knuckle decides not to blanket hate AI, then i will consider continuing work on projects.
 
 # The Mass Binding
 
